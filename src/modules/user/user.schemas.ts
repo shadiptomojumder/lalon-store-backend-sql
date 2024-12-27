@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 // Define the base schema with common fields
-const baseUserSchema = {
+export const baseUserSchema = {
   fullname: z
     .string()
     .min(1, { message: 'Full name is required' })
