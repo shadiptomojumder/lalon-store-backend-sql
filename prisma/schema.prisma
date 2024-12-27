@@ -1,0 +1,278 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ROLE {
+  USER
+  ADMIN
+  SELLER
+}
+
+model users {
+  id           String   @id @default(uuid())
+  fullname     String   @db.VarChar(255)
+  email        String   @unique @db.VarChar(255)
+  password     String   @db.VarChar(255)
+  phone        String?  @unique @db.VarChar(255)
+  otp          Int?
+  address      String?  @db.Text
+  role         ROLE     @default(USER)
+  avatar       String?
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([fullname]) // Index on fullname
+}
+
+// model users {
+//   id        String      @id @default(uuid())
+//   email     String      @unique
+//   password  String
+//   role      ROLE        @default(USER)
+//   otp       String?     @db.VarChar(10)
+//   createdAt DateTime    @default(now())
+//   updatedAt DateTime    @default(now()) @updatedAt
+
+//   customer_profiles customer_profiles?
+//   invoice_products  invoice_products[]
+//   invoices          invoices[]
+//   product_carts     product_carts[]
+//   product_wishes    product_wishes[]
+// }
+
+// model brands {
+//   id        String        @id @default(uuid())
+//   brandName String        @unique @db.VarChar(50)
+//   brandImg  String        @db.VarChar(300)
+//   createdAt DateTime      @default(now())
+//   updatedAt DateTime      @default(now()) @updatedAt
+//   products  products[]
+// }
+
+// model categories {
+//   id           String        @id @default(uuid())
+//   categoryName String        @unique @db.VarChar(50)
+//   categoryImg  String        @db.VarChar(300)
+//   createdAt    DateTime      @default(now())
+//   updatedAt    DateTime      @default(now()) @updatedAt
+//   products     products[]
+// }
+
+// model products {
+//   id             String             @id @default(uuid())
+//   title          String             @db.VarChar(200)
+//   short_des      String             @db.VarChar(500)
+//   price          Float
+//   discount       Boolean
+//   discount_price Float
+//   image          String             @db.VarChar(200)
+//   stock          Boolean
+//   star           Float
+//   remark         products_remark
+//   category_id    String
+//   brand_id       String
+//   createdAt      DateTime           @default(now())
+//   updatedAt      DateTime           @default(now()) @updatedAt
+
+//   invoice_products invoice_products[]
+//   product_carts    product_carts[]
+//   product_details  product_details?
+//   product_reviews  product_reviews[]
+//   product_sliders  product_sliders?
+//   product_wishes   product_wishes[]
+
+//   brands     brands     @relation(fields: [brand_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+//   categories categories @relation(fields: [category_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+// }
+
+// model product_details {
+//   id         String      @id @default(uuid())
+//   img1       String      @db.VarChar(200)
+//   img2       String      @db.VarChar(200)
+//   img3       String      @db.VarChar(200)
+//   img4       String      @db.VarChar(200)
+//   img5       String      @db.VarChar(200)
+//   img6       String      @db.VarChar(200)
+//   img7       String      @db.VarChar(200)
+//   img8       String      @db.VarChar(200)
+//   des        String      @db.Text
+//   color      String      @db.VarChar(200)
+//   size       String      @db.VarChar(200)
+//   product_id String      @unique
+//   createdAt  DateTime    @default(now())
+//   updatedAt  DateTime    @default(now()) @updatedAt
+//   products   products    @relation(fields: [product_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+// }
+
+// model product_sliders {
+//   id         String      @id @default(uuid())
+//   title      String      @db.VarChar(200)
+//   short_des  String      @db.VarChar(500)
+//   price      String      @db.VarChar(100)
+//   image      String      @db.VarChar(200)
+//   product_id String      @unique
+//   createdAt  DateTime    @default(now())
+//   updatedAt  DateTime    @default(now()) @updatedAt
+//   products   products    @relation(fields: [product_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+// }
+
+// model customer_profiles {
+//   id            String    @id @default(uuid())
+//   cus_name      String    @db.VarChar(100)
+//   cus_add       String    @db.VarChar(500)
+//   cus_city      String    @db.VarChar(50)
+//   cus_state     String    @db.VarChar(50)
+//   cus_postcode  String    @db.VarChar(50)
+//   cus_country   String    @db.VarChar(50)
+//   cus_phone     String    @db.VarChar(50)
+//   cus_fax       String    @db.VarChar(50)
+//   ship_name     String    @db.VarChar(100)
+//   ship_add      String    @db.VarChar(100)
+//   ship_city     String    @db.VarChar(100)
+//   ship_state    String    @db.VarChar(100)
+//   ship_postcode String    @db.VarChar(100)
+//   ship_country  String    @db.VarChar(100)
+//   ship_phone    String    @db.VarChar(50)
+//   user_id       String    @unique
+//   users         users     @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+//   createdAt DateTime      @default(now())
+//   updatedAt DateTime      @default(now()) @updatedAt
+
+//   product_reviews product_reviews[]
+// }
+
+// model product_carts {
+//   id         String      @id @default(uuid())
+//   user_id    String
+//   product_id String
+//   color      String      @db.VarChar(200)
+//   size       String      @db.VarChar(200)
+//   qty        Float
+//   createdAt  DateTime    @default(now())
+//   updatedAt  DateTime    @default(now()) @updatedAt
+//   products   products    @relation(fields: [product_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+//   users      users       @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+// }
+
+// model product_wishes {
+//   id         String      @id @default(uuid())
+//   product_id String
+//   user_id    String
+//   createdAt  DateTime    @default(now())
+//   updatedAt  DateTime    @default(now()) @updatedAt
+//   products   products    @relation(fields: [product_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+//   users      users       @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+// }
+
+// model product_reviews {
+//   id          String    @id @default(uuid())
+//   description String    @db.VarChar(1000)
+//   rating      String    @db.VarChar(10)
+//   customer_id String
+//   product_id  String
+
+//   createdAt DateTime    @default(now())
+//   updatedAt DateTime    @default(now()) @updatedAt
+
+//   customer_profiles customer_profiles @relation(fields: [customer_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+//   products          products          @relation(fields: [product_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+// }
+
+// model invoices {
+//   id               String                      @id @default(uuid())
+//   total            Float
+//   vat              Float
+//   payable          Float
+//   cus_details      String                   @db.VarChar(500)
+//   ship_details     String                   @db.VarChar(500)
+//   tran_id          String                   @db.VarChar(100)
+//   val_id           String                   @default("0") @db.VarChar(100)
+//   delivery_status  invoices_delivery_status
+//   payment_status   String                   @db.VarChar(255)
+//   user_id          String
+//   createdAt        DateTime                 @default(now())
+//   updatedAt        DateTime                 @default(now()) @updatedAt
+//   invoice_products invoice_products[]
+//   users            users                    @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+// }
+
+// model invoice_products {
+//   id         String    @id @default(uuid())
+//   invoice_id String
+//   product_id String
+//   user_id    String
+//   qty        Float
+//   sale_price Float
+//   color      String    @db.VarChar(50)
+//   size       String    @db.VarChar(50)
+
+//   createdAt DateTime    @default(now())
+//   updatedAt DateTime    @default(now()) @updatedAt
+
+//   invoices   invoices   @relation(fields: [invoice_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+//   products   products   @relation(fields: [product_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+//   users      users      @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+// }
+
+// model policies {
+//   id   String           @id @default(uuid())
+//   type policies_type
+//   des  String           @db.Text
+// }
+
+// model sslcommerz_accounts {
+//   id           String      @id @default(uuid())
+//   store_id     String      @db.VarChar(255)
+//   store_passwd String      @db.VarChar(255)
+//   currency     String      @db.VarChar(255)
+//   success_url  String      @db.VarChar(255)
+//   fail_url     String      @db.VarChar(255)
+//   cancel_url   String      @db.VarChar(255)
+//   ipn_url      String      @db.VarChar(255)
+//   init_url     String      @db.VarChar(255)
+//   createdAt    DateTime    @default(now())
+//   updatedAt    DateTime    @default(now()) @updatedAt
+// }
+
+// model features {
+//   id          String    @id @default(uuid())
+//   name        String
+//   img         String    @db.VarChar(300)
+//   description String    @db.Text
+// }
+
+// enum policies_type {
+//   about
+//   refund
+//   terms
+//   contact
+//   complain
+// }
+
+// enum invoices_delivery_status {
+//   Pending
+//   Processing
+//   Completed
+// }
+
+// enum products_remark {
+//   popular
+//   new
+//   top
+//   special
+//   trending
+//   regular
+// }
