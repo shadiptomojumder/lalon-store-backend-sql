@@ -1,41 +1,48 @@
-import config from '@/config';
-import catchAsync from '@/shared/catchAsync';
-import sendResponse from '@/shared/sendResponse';
-import { NextFunction, Request, Response } from 'express';
-import { ILoginUserResponse } from '@/auth/auth.interface';
-import { AuthServices } from '@/auth/auth.services';
-import { StatusCodes } from 'http-status-codes';
+import { AuthServices } from "@/auth/auth.services";
+import config from "@/config";
+import asyncErrorHandler from "@/shared/asyncErrorHandler";
+import sendResponse from "@/shared/sendResponse";
+import { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 
-const signup = catchAsync(
+// Controller function to handle user signup
+const signup = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    // Call the signup service to create a new user
     const result = await AuthServices.signup(req);
+
+    // Send a response with the created user data
     sendResponse(res, {
       statusCode: StatusCodes.CREATED,
       success: true,
-      message: 'User created successfully!',
+      message: "User created successfully!",
       data: result,
     });
-  },
+  }
 );
 
-const login = catchAsync(async (req: Request, res: Response) => {
+// Controller function to handle user login
+const login = asyncErrorHandler(async (req: Request, res: Response) => {
+  // Call the login service to authenticate the user
   const result = await AuthServices.login(req);
-  const { refreshToken } = result;
-  // set refresh token into cookie
+  const { refreshToken, accessToken, user } = result.data;
+
+  // Set the refresh token into a cookie with secure and httpOnly options
   const cookieOptions = {
-    secure: config.env === 'production',
+    secure: config.env === "production",
     httpOnly: true,
   };
+  res.cookie("refreshToken", refreshToken, cookieOptions);
 
-  res.cookie('refreshToken', refreshToken, cookieOptions);
-
-  sendResponse<ILoginUserResponse>(res, {
-    statusCode: 200,
+  // Send a response with the user data and tokens
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
     success: true,
-    message: 'User logged in successfully !',
+    message: "User logged in successfully !",
     data: {
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
+      user: { ...user },
+      accessToken,
+      refreshToken,
     },
   });
 });
