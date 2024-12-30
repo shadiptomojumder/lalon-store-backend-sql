@@ -5,29 +5,21 @@ import asyncErrorHandler from "@/shared/asyncErrorHandler";
 import pick from "../../shared/pick";
 import prisma from "../../shared/prisma";
 import sendResponse from "../../shared/sendResponse";
-import { userFilterAbleFields } from "./user.constant";
 import { UserServices } from "./user.services";
+import { userFilterAbleFields } from "./user.utils";
 
-const createUser = asyncErrorHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const result = await UserServices.createUser(req);
-    sendResponse(res, {
-      statusCode: StatusCodes.OK,
-      success: true,
-      message: "User created successfully!",
-      data: result,
-    });
-  }
-);
-
+// Controller function to get all user 
 const getAllUser = asyncErrorHandler(async (req: Request, res: Response) => {
-  const filters = pick(req.query, userFilterAbleFields);
-  const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
-  const user = req.user;
+  // Extract filters from the query parameters using the pick function and userFilterAbleFields array
+  const filters: Record<string, any> = pick(req.query, userFilterAbleFields);
+  const options: Record<string, any> = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+  const user: IAuthUser = req.user as IAuthUser;
+  
+
   const result = await UserServices.getAllUser(
     filters,
     options,
-    user as IAuthUser
+    user
   );
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -80,7 +72,6 @@ export async function getUser(req: Request, res: Response) {
 }
 
 export const UserController = {
-  createUser,
   getMyProfile,
   getOneUser,
   getUser,

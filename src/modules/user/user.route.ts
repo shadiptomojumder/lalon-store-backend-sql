@@ -7,13 +7,8 @@ import { ENUM_USER_ROLE } from "../../enums/user";
 
 const router = express.Router();
 
-// Route to create a new user
-// Validates the request body using UserValidation.createUser schema
-router.post(
-  "/create",
-  validateRequest(UserValidation.createUser),
-  UserController.createUser
-);
+// Route to get all users
+router.get("/all", UserController.getAllUser);
 
 // Route to get the profile of the authenticated user
 // Requires the user to have the SELLER role
@@ -23,8 +18,7 @@ router.get(
   UserController.getMyProfile
 );
 
-// Route to get all users
-router.get("/all", UserController.getAllUser);
+
 
 // Route to get a user by ID
 router.get("/:id", UserController.getOneUser);

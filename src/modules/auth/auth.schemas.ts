@@ -6,8 +6,8 @@ export const signupRequestSchema = z.object({
   body: z.object(baseUserSchema),
 });
 
-// General user schema for all user operations
-export const userSchema = z.object(baseUserSchema);
+// Schema for validating signup data in auth services
+export const signupDataSchema = z.object(baseUserSchema);
 
 // Schema for validating login data in auth services
 export const loginDataSchema = z.object({

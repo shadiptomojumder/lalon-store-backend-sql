@@ -1,1 +1,0 @@
-export const userFilterAbleFields:string[] = ['id', 'email', 'role', 'createdAt', 'updatedAt']

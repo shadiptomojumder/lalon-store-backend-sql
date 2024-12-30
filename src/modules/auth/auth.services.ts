@@ -1,18 +1,18 @@
+import { loginDataSchema, signupDataSchema } from "@/auth/auth.schemas";
+import { AuthUtils } from "@/auth/auth.utils";
+import config from "@/config";
+import ApiError from "@/errors/ApiError";
 import { hashedPassword } from "@/helpers/hashPasswordHelper";
+import prisma from "@/shared/prisma";
 import { Request } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Secret } from "jsonwebtoken";
-import config from "../../config";
-import ApiError from "../../errors/ApiError";
-import prisma from "../../shared/prisma";
-import { loginDataSchema, userSchema } from "./auth.schemas";
-import { AuthUtils } from "./auth.utils";
 
 // Signup function to register a new user
 const signup = async (req: Request) => {
   try {
     // Validate the request body against the user schema
-    const parseBody = userSchema.safeParse(req.body);
+    const parseBody = signupDataSchema.safeParse(req.body);
     if (!parseBody.success) {
       // If validation fails, collect error messages and throw a BAD_REQUEST error
       const errorMessages = parseBody.error.errors
