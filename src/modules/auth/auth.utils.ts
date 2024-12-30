@@ -2,6 +2,7 @@ import { jwtHelpers } from '@/helpers/jwtHelpers';
 import * as bcrypt from 'bcrypt';
 import { Secret } from 'jsonwebtoken';
 
+// Assign the comparePasswords function to the comparePasswords property of AuthUtils
 async function comparePasswords(plainTextPassword: string, hashedPassword: string): Promise<boolean> {
     try {
         const match: boolean = await bcrypt.compare(plainTextPassword, hashedPassword);
@@ -10,7 +11,7 @@ async function comparePasswords(plainTextPassword: string, hashedPassword: strin
         throw new Error('Error comparing passwords');
     }
 }
-
+// Assign the generateToken function to the generateToken property of AuthUtils
 const generateToken = (payload: Record<string, unknown>, secret: Secret, expiresIn: string) => {
     return jwtHelpers.createToken(payload, secret, expiresIn);
   };
