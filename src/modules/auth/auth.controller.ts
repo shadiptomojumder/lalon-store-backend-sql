@@ -1,7 +1,7 @@
 import { AuthServices } from "@/auth/auth.services";
 import config from "@/config";
+import ApiResponse from "@/shared/ApiResponse";
 import asyncErrorHandler from "@/shared/asyncErrorHandler";
-import sendResponse from "@/shared/sendResponse";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
@@ -12,7 +12,7 @@ const signup = asyncErrorHandler(
     const result = await AuthServices.signup(req);
 
     // Send a response with the created user data
-    sendResponse(res, {
+    ApiResponse(res, {
       statusCode: StatusCodes.CREATED,
       success: true,
       message: "User created successfully!",
@@ -32,10 +32,11 @@ const login = asyncErrorHandler(async (req: Request, res: Response) => {
     secure: config.env === "production",
     httpOnly: true,
   };
+  res.cookie("accessToken", accessToken, cookieOptions);
   res.cookie("refreshToken", refreshToken, cookieOptions);
 
   // Send a response with the user data and tokens
-  sendResponse(res, {
+  ApiResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: "User logged in successfully !",

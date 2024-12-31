@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
-import { ZodSchema } from 'zod';
-import sendResponse from '../shared/sendResponse';
+import { NextFunction, Request, Response } from "express";
+import { ZodSchema } from "zod";
+import ApiResponse from "@/shared/ApiResponse";
 
 // Validation middleware
 export const validateSchema =
@@ -10,15 +10,14 @@ export const validateSchema =
 
     // handle non-compliant request body
     if (!success) {
-      sendResponse(res, {
+      ApiResponse(res, {
         statusCode: 200,
         success: false,
         message: error.errors
-          .map((t) => `${t.path[0] ?? ''}: ${t.message}`)
-          .join(', '),
-      })
+          .map((t) => `${t.path[0] ?? ""}: ${t.message}`)
+          .join(", "),
+      });
       next(error);
-
     }
 
     next();

@@ -8,7 +8,7 @@ import { ENUM_USER_ROLE } from "../../enums/user";
 const router = express.Router();
 
 // Route to get all users
-router.get("/all", UserController.getAllUser);
+router.get("/all",auth(ENUM_USER_ROLE.SELLER,ENUM_USER_ROLE.USER), UserController.getAllUser);
 
 // Route to get the profile of the authenticated user
 // Requires the user to have the SELLER role

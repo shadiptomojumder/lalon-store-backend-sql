@@ -1,12 +1,12 @@
+import asyncErrorHandler from "@/shared/asyncErrorHandler";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import asyncErrorHandler from "@/shared/asyncErrorHandler";
-import sendResponse from "../../shared/sendResponse";
+import ApiResponse from "@/shared/ApiResponse";
 import { productService } from "./product.services";
 
 const createProduct = asyncErrorHandler(async (req: Request, res: Response) => {
   const product = await productService.createProduct(req.body);
-  sendResponse(res, {
+  ApiResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: "Product created",
@@ -18,7 +18,7 @@ const getSingleProduct = asyncErrorHandler(
   async (req: Request, res: Response) => {
     const id = req.params.id;
     const product = await productService.getSingleProduct(id);
-    sendResponse(res, {
+    ApiResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
       message: "Product fetched",

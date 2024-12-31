@@ -11,11 +11,16 @@ const auth =
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       //get authorization token
-      const token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
+      const token = req.cookies?.accessToken || req.headers.authorization?.split(' ')[1]; // Bearer <token>
+      console.log("15.The accessToken is:",req.cookies?.accessToken);
+
 
       // checking if the token is missing
       if (!token) {
         throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are not authorized!');
+      }else{
+        console.log("You are authorized!");
+        
       }
 
       const decoded = jwtHelpers.verifyToken(
