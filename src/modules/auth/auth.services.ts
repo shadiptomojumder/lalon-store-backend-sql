@@ -13,8 +13,9 @@ const signup = async (req: Request) => {
   try {
     // Validate the request body against the user schema
     const parseBody = signupDataSchema.safeParse(req.body);
+
+    // If validation fails, collect error messages and throw a BAD_REQUEST error
     if (!parseBody.success) {
-      // If validation fails, collect error messages and throw a BAD_REQUEST error
       const errorMessages = parseBody.error.errors
         .map((error) => error.message)
         .join(",");
@@ -30,8 +31,9 @@ const signup = async (req: Request) => {
         ],
       },
     });
+
+    // If user exists, throw a CONFLICT error
     if (isUserExist) {
-      // If user exists, throw a CONFLICT error
       throw new ApiError(StatusCodes.CONFLICT, "User already exists");
     }
 

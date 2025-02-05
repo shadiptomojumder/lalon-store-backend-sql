@@ -36,22 +36,6 @@ model users {
   @@index([fullname]) // Index on fullname
 }
 
-// model users {
-//   id        String      @id @default(uuid())
-//   email     String      @unique
-//   password  String
-//   role      ROLE        @default(USER)
-//   otp       String?     @db.VarChar(10)
-//   createdAt DateTime    @default(now())
-//   updatedAt DateTime    @default(now()) @updatedAt
-
-//   customer_profiles customer_profiles?
-//   invoice_products  invoice_products[]
-//   invoices          invoices[]
-//   product_carts     product_carts[]
-//   product_wishes    product_wishes[]
-// }
-
 // model brands {
 //   id        String        @id @default(uuid())
 //   brandName String        @unique @db.VarChar(50)
@@ -61,40 +45,59 @@ model users {
 //   products  products[]
 // }
 
-// model categories {
-//   id           String        @id @default(uuid())
-//   categoryName String        @unique @db.VarChar(50)
-//   categoryImg  String        @db.VarChar(300)
-//   createdAt    DateTime      @default(now())
-//   updatedAt    DateTime      @default(now()) @updatedAt
-//   products     products[]
-// }
+model categories {
+  id        String     @id @default(uuid())
+  title     String     @unique @db.VarChar(50) // Frontend display name (e.g., "Men's Shoes")
+  value     String     @unique // Unique query-friendly name (e.g., "mens_shoes")
+  thumbnail String? // Optional image URL for category thumbnail
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now()) @updatedAt
+  products  products[]
+}
+
+model products {
+  id          String     @id @default(uuid()) // Unique identifier
+  name        String     @db.Text
+  price       Decimal    @default(0.00) // Use Decimal for currency precision
+  discount    Float? // Store discount percentage (0-100)
+  finalPrice  Decimal?   @default(0.00) // Store the price after applying discount (for fast queries)
+  quantity    String     @db.Text
+  description String?    @db.Text
+  stock       Int        @default(0)
+  images      String[] // Changed multiple image fields to an array (more scalable)
+  sku         String?    @unique // Unique Stock Keeping Unit for inventory
+  isActive    Boolean    @default(true) // To enable/disable a product
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime? // Soft delete instead of removing records
+  categoryId  String
+  category    categories @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([name])
+  @@index([categoryId])
+  @@index([sku])
+}
 
 // model products {
-//   id             String             @id @default(uuid())
-//   title          String             @db.VarChar(200)
-//   short_des      String             @db.VarChar(500)
-//   price          Float
-//   discount       Boolean
-//   discount_price Float
-//   image          String             @db.VarChar(200)
-//   stock          Boolean
-//   star           Float
-//   remark         products_remark
-//   category_id    String
-//   brand_id       String
-//   createdAt      DateTime           @default(now())
-//   updatedAt      DateTime           @default(now()) @updatedAt
+//   id          String   @id @default(uuid()) // Unique identifier
+//   name        String   @db.Text
+//   price       Decimal  @default(0.00) // Use Decimal for currency precision
+//   discount    Float?   // Store discount percentage (0-100)
+//   finalPrice  Decimal? @default(0.00) // Store the price after applying discount (for fast queries)
+//   quantity    String   @db.Text 
+//   category    String   @db.Text
+//   description String?  @db.Text
+//   stock       Int      @default(0)
+//   images      String[] // Changed multiple image fields to an array (more scalable)
+//   sku         String?  @unique // Unique Stock Keeping Unit for inventory
+//   isActive    Boolean  @default(true) // To enable/disable a product
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+//   deletedAt   DateTime? // Soft delete instead of removing records
 
-//   invoice_products invoice_products[]
-//   product_carts    product_carts[]
-//   product_details  product_details?
-//   product_reviews  product_reviews[]
-//   product_sliders  product_sliders?
-//   product_wishes   product_wishes[]
-
-//   brands     brands     @relation(fields: [brand_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-//   categories categories @relation(fields: [category_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+//   @@index([name])
+//   @@index([category])
+//   @@index([sku])
 // }
 
 // model product_details {
