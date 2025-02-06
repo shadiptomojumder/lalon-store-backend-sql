@@ -66,7 +66,7 @@ export const ProductInput = productSchema.extend({
 });
 
 // Product Update Schema (to handle updates)
-export const ProductUpdateInput = productSchema.partial().extend({
+export const productUpdateSchema = productSchema.partial().extend({
   // Allow partial updates
 });
 

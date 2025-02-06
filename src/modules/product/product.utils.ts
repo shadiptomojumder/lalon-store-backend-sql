@@ -6,3 +6,15 @@ export const generateSku = (category: string, productName: string): string => {
   
     return `${categoryCode}-${productPrefix}-${uniqueId}`; // Example: "NIKE-AIRM-0012"
   };
+
+  // Product filters
+  export const productFilterAbleFields: string[] = [
+    "id",
+    "name",
+    "price",
+    "stock",
+    "sku",
+    "categoryId",
+    "createdAt",
+    "updatedAt",
+  ];
