@@ -9,6 +9,12 @@ router.post("/category/create", productController.createCategory);
 // Get all categories
 router.get("/category/all", productController.getAllCategory);
 
+// Update a category
+router.patch("/category/:id", productController.updateCategory);
+
+// Delete a category by ID
+router.delete("/category/:id", productController.deleteCategory);
+
 // Create a new Product
 router.post("/create", productController.createProduct);
 

@@ -2,12 +2,14 @@ import { paginationHelpers } from "@/helpers/paginationHelper";
 import { IAuthUser, IGenericResponse } from "@/interfaces/common";
 import { IPaginationOptions } from "@/interfaces/pagination";
 import { Prisma, products } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Request } from "express";
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../../errors/ApiError";
 import prisma from "../../shared/prisma";
 import {
   categorySchema,
+  categoryUpdateSchema,
   productSchema,
   productUpdateSchema,
 } from "./product.schemas";
@@ -377,6 +379,59 @@ const createCategory = async (req: Request) => {
   }
 };
 
+// Function to update an existing category
+const updateCategory = async (req: Request) => {
+  try {
+    // Category Id
+    const { id } = req.params;
+
+    // Validate the request body against the category update schema
+    const parseBody = categoryUpdateSchema.safeParse(req.body);
+
+    // If validation fails, collect error messages and throw a BAD_REQUEST error
+    if (!parseBody.success) {
+      const errorMessages = parseBody.error.errors
+        .map((error) => error.message)
+        .join(",");
+      throw new ApiError(StatusCodes.BAD_REQUEST, errorMessages);
+    }
+
+    // Generate a unique `value` from `title` if title is updated
+    let generatedValue;
+    if (parseBody.data.title) {
+      generatedValue = parseBody.data.title
+        .toLowerCase()
+        .replace(/\s+/g, "_") // Convert spaces to underscores
+        .replace(/[^a-z0-9_]/g, ""); // Remove special characters
+    }
+
+    // Update the category with the provided fields
+    const category = await prisma.categories.update({
+      where: { id },
+      data: {
+        ...parseBody.data,
+        ...(generatedValue && { value: generatedValue }),
+      },
+    });
+
+    // If category is not found, throw a NOT_FOUND error
+    if (!category) {
+      throw new ApiError(StatusCodes.NOT_FOUND, "Category not found");
+    }
+
+    return category;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+    } else {
+      throw new ApiError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        "An unknown error occurred"
+      );
+    }
+  }
+};
+
 // Function to get all categories
 const getAllCategory = async (req: Request) => {
   try {
@@ -399,6 +454,40 @@ const getAllCategory = async (req: Request) => {
   }
 };
 
+// Function to delete a category by ID
+const deleteCategory = async (id: string) => {
+  try {
+    // Delete the category with the specified ID from the database
+    const category = await prisma.categories.delete({
+      where: {
+        id,
+      },
+    });
+
+    // If the category is not found, throw a NOT_FOUND error
+    if (!category) {
+      throw new ApiError(StatusCodes.NOT_FOUND, "Category not found");
+    }
+
+    return category;
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      // Handling Prisma Foreign Key Constraint Violation (P2003)
+      if (error.code === "P2003") {
+        throw new ApiError(
+          StatusCodes.BAD_REQUEST,
+          "Cannot delete category. There are products linked to this category."
+        );
+      }
+    } else {
+      throw new ApiError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        "An unknown error occurred"
+      );
+    }
+  }
+};
+
 export const ProductService = {
   createProduct,
   updateProduct,
@@ -407,5 +496,7 @@ export const ProductService = {
   deleteSingleProduct,
   deleteMultipleProducts,
   createCategory,
+  updateCategory,
   getAllCategory,
+  deleteCategory,
 };

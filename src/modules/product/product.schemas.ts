@@ -86,3 +86,8 @@ export const categorySchema = z.object({
     .optional(),
   thumbnail: z.string().url("Invalid thumbnail URL").optional(), // Thumbnail should be a valid URL
 });
+
+// Category Update Schema (to handle updates)
+export const categoryUpdateSchema = categorySchema.partial().extend({
+  // Allow partial updates
+});
